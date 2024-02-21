@@ -1,0 +1,40 @@
+/JOB
+//NAME INIT_ROS_CLEAN
+//POS
+///NPOS 0,0,0,0,0,0
+//INST
+///DATE 2022/03/24 15:19
+///ATTR SC,RW
+///GROUP1 RB1,BS1
+///GROUP2 ST1
+///GROUP3 ST2
+NOP
+DOUT OT#(889) OFF
+DOUT OT#(890) OFF
+TIMER T=0.01
+DOUT OT#(889) ON
+'Start loop
+*LOOP
+'Check for action via IO signal
+IFTHENEXP OT#(1529)=ON
+	 'Call any job
+	 'Can include move commands
+	 CALL JOB:MOVETO_POS1_SET_IO1
+	 'Reset action command
+	 DOUT OT#(1529) OFF
+ENDIF
+IFTHENEXP OT#(1530)=ON
+	 'Call any job
+	 'Can include move commands
+	 CALL JOB:MOVETO_POS2_SET_IO2
+	 'Reset action command
+	 DOUT OT#(1530) OFF
+ENDIF
+'Wait for a new IO signal
+'To start new job OR ROS_DONE
+WAIT FOREXPRESS OT#(890)=ON OREXP OG#(192)<>0
+'When not ROS_DONE go to loop
+JUMP *LOOP IF OT#(890)=OFF
+DOUT OT#(889) OFF
+DOUT OT#(890) OFF
+END
