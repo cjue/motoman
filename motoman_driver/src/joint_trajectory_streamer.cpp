@@ -122,6 +122,8 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
 
   enabler_ = node_.advertiseService("robot_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
 
+  checker_ = node_.advertiseService("check_robot_ready", &MotomanJointTrajectoryStreamer::checkRobotReadyCB, this);
+
   srv_select_tool_ = node_.advertiseService("select_tool", &MotomanJointTrajectoryStreamer::selectToolCB, this);
 
   return rtn;
