@@ -126,6 +126,16 @@ void JointTrajectoryAction::robotStatusCB(
   const industrial_msgs::RobotStatusConstPtr &msg)
 {
   last_robot_status_ = msg;  // caching robot status for later use.
+
+  // abort if motion became impossible
+  if (last_robot_status_->motion_possible.val == industrial_msgs::TriState::FALSE)
+  {
+    //TODO: can we also make sure this was possible when we receive the goal?
+    ROS_WARN("Aborting goal because we have never heard a controller state message.");
+    abortGoal();
+
+    //TODO: also abort for each group?
+  }
 }
 
 void JointTrajectoryAction::watchdog(const ros::TimerEvent &e)
@@ -138,25 +148,6 @@ void JointTrajectoryAction::watchdog(const ros::TimerEvent &e)
   if (!trajectory_state_recvd_)
   {
     ROS_DEBUG("Trajectory state not received since last watchdog");
-  }
-
-  // Aborts the active goal if the controller does not appear to be active.
-  if (has_active_goal_)
-  {
-    if (!trajectory_state_recvd_)
-    {
-      // last_trajectory_state_ is null if the subscriber never makes a connection
-      if (!last_trajectory_state_)
-      {
-        ROS_WARN("Aborting goal because we have never heard a controller state message.");
-      }
-      else
-      {
-        ROS_WARN_STREAM(
-          "Aborting goal because we haven't heard from the controller in " << WATCHD0G_PERIOD_ << " seconds");
-      }
-      abortGoal();
-    }
   }
 
   // Reset the trajectory state received flag

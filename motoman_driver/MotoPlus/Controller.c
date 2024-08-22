@@ -753,6 +753,8 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 							Ros_MotionServer_ClearQ_All(controller);
 						break;
 
+					//TODO: können wir vermeiden, nach HOLD erneut mpStartJob auszuführen?
+
 					case IO_ROBOTSTATUS_WAITING_ROS: // Job input signaling ready for external motion
 					{
 						if(ioStatus[IO_ROBOTSTATUS_WAITING_ROS] == 0)  // signal turned OFF
